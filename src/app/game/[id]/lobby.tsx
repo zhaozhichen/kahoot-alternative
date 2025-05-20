@@ -10,31 +10,16 @@ export default function Lobby({
   onRegisterCompleted: (participant: Participant) => void
 }) {
   const [participant, setParticipant] = useState<Participant | null>(null)
+  const [nickname, setNickname] = useState('')
 
   useEffect(() => {
+    if (!nickname) return;
     const fetchParticipant = async () => {
-      let userId: string | null = null
-
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession()
-
-      if (sessionData.session) {
-        userId = sessionData.session?.user.id ?? null
-      } else {
-        const { data, error } = await supabase.auth.signInAnonymously()
-        if (error) console.error(error)
-        userId = data?.user?.id ?? null
-      }
-
-      if (!userId) {
-        return
-      }
-
       const { data: participantData, error } = await supabase
         .from('participants')
         .select()
         .eq('game_id', gameId)
-        .eq('user_id', userId)
+        .eq('nickname', nickname)
         .maybeSingle()
 
       if (error) {
@@ -46,9 +31,8 @@ export default function Lobby({
         onRegisterCompleted(participantData)
       }
     }
-
     fetchParticipant()
-  }, [gameId, onRegisterCompleted])
+  }, [gameId, nickname, onRegisterCompleted])
 
   return (
     <div className="bg-green-500 flex justify-center items-center min-h-screen">
@@ -85,6 +69,9 @@ function Register({
   onRegisterCompleted: (player: Participant) => void
   gameId: string
 }) {
+  const [nickname, setNickname] = useState('')
+  const [sending, setSending] = useState(false)
+
   const onFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSending(true)
@@ -100,15 +87,11 @@ function Register({
 
     if (error) {
       setSending(false)
-
       return alert(error.message)
     }
 
     onRegisterCompleted(participant)
   }
-
-  const [nickname, setNickname] = useState('')
-  const [sending, setSending] = useState(false)
 
   return (
     <form onSubmit={(e) => onFormSubmit(e)}>

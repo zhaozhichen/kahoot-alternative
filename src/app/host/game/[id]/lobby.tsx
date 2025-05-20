@@ -1,3 +1,5 @@
+"use client";
+
 import { Participant, supabase } from '@/types/types'
 import { useQRCode } from 'next-qrcode'
 
@@ -19,6 +21,8 @@ export default function Lobby({
       return alert(error.message)
     }
   }
+
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -45,7 +49,7 @@ export default function Lobby({
         <div className="pl-4">
           {/* <img src="/qr.png" alt="QR code" /> */}
           <Canvas
-            text={`https://kahoot-alternative.vercel.app/game/${gameId}`}
+            text={`${baseUrl}/game/${gameId}`}
             options={{
               errorCorrectionLevel: 'M',
               margin: 3,
