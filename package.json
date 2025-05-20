@@ -20,7 +20,8 @@
     "react-confetti": "^6.1.0",
     "react-countdown-circle-timer": "^3.2.1",
     "react-dom": "^18",
-    "react-use": "^17.5.0"
+    "react-use": "^17.5.0",
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
     "@types/node": "^20",
