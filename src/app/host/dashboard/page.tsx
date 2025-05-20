@@ -80,14 +80,14 @@ export default function Home() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      complete: (results: ParseResult<any>) => {
+      complete: (results: any) => {
         if (results.errors.length) {
           setCsvError('CSV Parse Error: ' + results.errors[0].message);
         } else {
           setCsvPreview(results.data as any[]);
         }
       },
-      error: (err: ParseError) => setCsvError('CSV Parse Error: ' + err.message),
+      error: (err: any) => setCsvError('CSV Parse Error: ' + err.message),
     });
   };
 
