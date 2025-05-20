@@ -2,6 +2,8 @@
 
 import { Participant, supabase } from '@/types/types'
 import { useQRCode } from 'next-qrcode'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Lobby({
   participants: participants,
@@ -11,6 +13,7 @@ export default function Lobby({
   gameId: string
 }) {
   const { Canvas } = useQRCode()
+  const router = useRouter()
 
   const onClickStartGame = async () => {
     const { data, error } = await supabase
@@ -23,6 +26,25 @@ export default function Lobby({
   }
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('game-phase')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
+        (payload) => {
+          if (payload.new.phase === 'quiz') {
+            router.push(`/host/game/${gameId}/quiz`);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [gameId, router]);
 
   return (
     <div className="flex justify-center items-center min-h-screen">
