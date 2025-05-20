@@ -17,13 +17,28 @@ export default function Lobby({
 
   const onClickStartGame = async () => {
     console.log('gameId:', gameId);
+
+    // Fetch the game row to ensure it exists
+    const { data: game, error: fetchError } = await supabase
+      .from('games')
+      .select('id')
+      .eq('id', gameId)
+      .single();
+
+    if (fetchError || !game) {
+      alert('Game not found. Please try again.');
+      return;
+    }
+
     const { data, error } = await supabase
       .from('games')
       .update({ phase: 'quiz' })
-      .eq('id', gameId)
+      .eq('id', gameId);
+
     console.log('update data:', data, 'error:', error);
+
     if (error) {
-      return alert(error.message)
+      return alert(error.message);
     }
   }
 
