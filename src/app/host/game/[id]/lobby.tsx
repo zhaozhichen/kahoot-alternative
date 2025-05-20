@@ -16,10 +16,12 @@ export default function Lobby({
   const router = useRouter()
 
   const onClickStartGame = async () => {
+    console.log('gameId:', gameId);
     const { data, error } = await supabase
       .from('games')
       .update({ phase: 'quiz' })
       .eq('id', gameId)
+    console.log('update data:', data, 'error:', error);
     if (error) {
       return alert(error.message)
     }
